@@ -1,57 +1,76 @@
+const overLay = document.getElementById('overlay')
 const bodyTag = document.getElementsByTagName('body')[0];
 const section = document.getElementById('qwerty');
 const divPhrase = document.getElementById('phrase');
 const ulList = document.getElementsByClassName('ul-list')[0]
-const countedMiss = 0;
+let countedMiss = 0;
 const phrases = ['the fat cat','scary spider','fast little rabbit', 'fast ninja', ' big sleepy frog','worm in an apple'];
 const mainContainer = document.getElementsByClassName('main-container')[0];
-let randomPhrase = '';
-let parcedArr= [];
-let varLetter = '' 
+///=================
+
+//^^^^^^^^^^out put of the randomPhrases()^^^^^^^^^^
+// let parcedArr= [];
 let buttons = document.getElementsByTagName('button')
-const getRandomPhrase =(arr)=>{
-randomPhrase = phrases[Math.floor(Math.random()*arr.length)]
+function getRandomPhrase (arr){
+let randomPhrase = phrases[Math.floor(Math.random()*arr.length)]
 console.log(randomPhrase)
-console.log(randomPhrase.length +'#phrase lenth')
+var parcedArr = [];
+for (let i=0; i<randomPhrase.length;i++){
+  parcedArr.push(randomPhrase[i])  
+}
+return parcedArr
 }
 
-function parceArry(arr){  
-  for (let i=0; i<arr.length;i++){
-    parcedArr.push(arr[i])
-    
-  }
-}
 
 function addTooUl(arr) {
   for( let i=0; i<arr.length; i++){
   let newList = document.createElement('LI');
-  newList.innerText= parcedArr[i];    
-  if (newList.innerText !== " "){    
+  newList.innerText = arr[i]
+  ulList.appendChild(newList);  
+  if (newList.innerText !== ""){    
     newList.className= 'letter'
     }
-  ulList.appendChild(newList);  
   }
-console.log( ulList)// searching for if statment input
-
 }
-//compare letter that will conside with input and if match add "show"
-function checkLetter(letter){
-  
+
+
+function checkLetter(clickedButton){
   let addedLetter= document.getElementsByClassName('letter');
-  for(let i =0; i<addedLetter.length;i++){
-    
-    let listedLetter = addedLetter[i].innerText
-    if (letter === listedLetter){
-      addedLetter[i].className ='letter show'
-      varLetter= letter  
-      console.log(varLetter);
+  console.log(addedLetter)
+  var matchedLetter = null
+  for(let i =0; i<addedLetter.length;i++){  
+    if(clickedButton.innerText == addedLetter[i].innerText){
+      addedLetter[i].className ='letter show';
+     matchedLetter =  clickedButton.innerText; 
+    }
+    }
+    return matchedLetter}
+function checkForWin(){
+  let shownLetters =document.getElementsByClassName('show').length;
+  let allLetterOptions= document.getElementsByClassName('letter').length;
+  let title = document.querySelector('.title');
+    let button = document.querySelector('.btn__reset')
+  if(countedMiss>=5){
+    overLay.style.display='';
+    overLay.className= 'lose'
+    title.innerText = 'YOU LOSE'
+    button.innerText = "play again?"
+    console.log(button)
+  }else if(shownLetters >= allLetterOptions){
+    console.log(shownLetters)
+    console.log(allLetterOptions)
+    overLay.className= 'win'
+    overLay.style.display=''
+    console.log(overLay)
+  
+  
+    title.innerText = 'YOU WON'
+    button.innerText = "play again"
   }
-  else{
-    varLetter=null
-  }
-}
+
 }
 
+  
 
 
 
@@ -60,40 +79,43 @@ function checkLetter(letter){
 
 
 // console.log(pickedPhrase)
-mainContainer.addEventListener('click', (e)=>{
-    
-    if(e.target.textContent==="Start Game"){
-    document.getElementById('overlay').style.display="none";
-    }
+document.getElementById('overlay')
+.addEventListener('click', (e)=>{
+  
+    overLay.style.display="none";
+  
 
 }
 )
 
+
+
+
 //====((letter variavles""??"))======
-let letterFound = ''
-bodyTag.addEventListener('keypress', (e)=>{
-  
-  for (let i= 0; i<buttons.length; i++){
-   if( buttons[i].innerText == e.key ){
-    buttons[i].className='chosen'
-    checkLetter(e.key)
-    buttons[i].disabled=true;
-    
-   }; 
-    
+
+section.addEventListener('click',(e)=>{
+  var keyButtons = document.getElementsByTagName('button')
+  for (let i =0; i< keyButtons.length; i++){
+    if (keyButtons[i].innerText == e.target.innerText){
+      keyButtons[i].className ='chosen'
+      keyButtons[i].disabled=true;
+      var letterFound =checkLetter(e.target)
+      if(letterFound === null){
+        const trys = document.getElementsByClassName('tries')
+        const liParent =trys[0].parentNode;
+        liParent.removeChild(trys[0])
+        countedMiss +=1;
+      }
+      checkForWin();
+      reset()
     }
-    
-  })
+    }
+  }
 
+)
   
-  // if(document.getElementsByTagName('button').innerText == e.key){
-  //   console.log('marker')
-  // }
 
 
-
-getRandomPhrase(phrases)
-parceArry(randomPhrase)
-addTooUl(parcedArr)
-
-console.log(varLetter+'  found the')
+const phrasesArray =getRandomPhrase(phrases)
+//^^^^THIS FIRST PICK A RANDOM PHRASE FROM ARRY "VAR"
+addTooUl(phrasesArray)
